@@ -16,9 +16,11 @@ class Node:
 
     def update_predict_value(self, data):
         self.predict_value = data.mean()
+        print('叶子节点预测值：', self.predict_value)
 
     def get_predict_value(self, instance):
         if self.is_leaf:
+            print('predict:', self.predict_value)
             return self.predict_value
         if instance[self.split_feature] < self.split_value:
             return self.left_child.get_predict_value(instance)
@@ -43,7 +45,9 @@ class Tree:
             split_value = None
             split_left_index = None
             split_right_index = None
+            print('--树的深度：%d' % depth)
             for feature in self.features:
+                print('----划分特征：', feature)
                 feature_values = now_data[feature].unique()
                 for fea_val in feature_values:
                     # 尝试划分
@@ -52,12 +56,16 @@ class Tree:
                     left_mse = self._calculate_mse(now_data[left_index][self.target_name])
                     right_mse = self._calculate_mse(now_data[right_index][self.target_name])
                     sum_mse = left_mse + right_mse
+                    print('------划分值:%.3f,左节点损失:%.3f,右节点损失:%.3f,总损失:%.3f' %
+                          (fea_val, left_mse, right_mse, sum_mse))
                     if mse is None or sum_mse < mse:
                         split_feature = feature
                         split_value = fea_val
                         mse = sum_mse
                         split_left_index = left_index
                         split_right_index = right_index
+            print('--最佳划分特征：', split_feature)
+            print('--最佳划分值：', split_value)
 
             node = Node(remian_index, split_feature, split_value)
             # trick for DataFrame, index revert

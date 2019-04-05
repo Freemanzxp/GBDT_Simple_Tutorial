@@ -36,6 +36,7 @@ class DecisionTreeRegressor:
         # 对 m = 1, 2, ..., M
         for iter in range(1, self.n_trees+1):
             # 计算负梯度--对于平方误差来说就是残差
+            print('-----------------------------构建第%d颗树-----------------------------' % iter)
             self.loss_function.calculate_residual(data, iter)
             self.trees[iter] = Tree(data, self.max_depth, self.features, iter)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate)
@@ -59,13 +60,10 @@ if __name__ == '__main__':
                         [4, 30, 60, 1.8],
                         ], columns=['id', 'age', 'weight', 'label'])
     loss_function = SquaresError()
-    model = DecisionTreeRegressor(loss_function=loss_function, learning_rate=0.01, n_trees=100, max_depth=6)
+    model = DecisionTreeRegressor(loss_function=loss_function, learning_rate=0.1, n_trees=10, max_depth=2)
     model.fit(data)
-    # print(data)
-    # test_data = pd.DataFrame(data=[[1, 5, 25, 1.2],
-    #                   [2, 7, 30, 1.3],
-    #                   [3, 21, 70, 1.7],
-    #                   [4, 30, 60, 1.8],
-    #                   ], columns=['id', 'age', 'weight', 'label'])
-    # model.predict(test_data)
-    # print(test_data)
+    print(data)
+    test_data = pd.DataFrame(data=[[5, 25, 65],
+                      ], columns=['id', 'age', 'weight'])
+    model.predict(test_data)
+    print(test_data['predict_value'])

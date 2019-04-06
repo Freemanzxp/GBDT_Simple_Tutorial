@@ -64,10 +64,11 @@ if __name__ == '__main__':
                         [4, 30, 60, 1.8],
                         ], columns=['id', 'age', 'weight', 'label'])
     loss_function = SquaresError()
-    model = DecisionTreeRegressor(loss_function=loss_function, learning_rate=0.1, n_trees=10, max_depth=2,is_log=True)
+    model = DecisionTreeRegressor(loss_function=loss_function, learning_rate=0.1, n_trees=10, max_depth=2,is_log=False)
     model.fit(data)
     logger.info(data)
     test_data = pd.DataFrame(data=[[5, 25, 65],
                       ], columns=['id', 'age', 'weight'])
     model.predict(test_data)
-    print(test_data['predict_value'])
+    logger.setLevel(logging.INFO)
+    logger.info((test_data['predict_value']))

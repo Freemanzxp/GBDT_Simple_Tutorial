@@ -2,10 +2,11 @@
 Created on ：2019/03/28
 @author: Freeman
 """
-import pandas as pd
-from loss_function import SquaresError
-from decision_tree import Tree
 import logging
+import pandas as pd
+from GBDT.decision_tree import Tree
+from GBDT.loss_function import SquaresError
+
 logging.basicConfig(level= logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
@@ -14,13 +15,12 @@ pd.set_option('display.max_rows', None)
 
 class DecisionTreeRegressor:
 
-    def __init__(self, loss_function, learning_rate, n_trees, max_depth, verbose=0, is_log = True):
+    def __init__(self, loss_function, learning_rate, n_trees, max_depth, is_log=False):
 
         self.loss_function = loss_function
         self.learning_rate = learning_rate
         self.n_trees = n_trees
         self.max_depth = max_depth
-        self.verbose = verbose
         self.features = None
         self.trees = {}
         self.f_0 = None

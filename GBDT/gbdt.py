@@ -8,7 +8,7 @@ import logging
 import pandas as pd
 from GBDT.decision_tree import Tree
 from GBDT.loss_function import SquaresError, BinomialDeviance
-
+from GBDT.treeplot import printtree
 logging.basicConfig(level= logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
@@ -50,6 +50,7 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             self.loss_function.calculate_residual(data, iter)
             self.trees[iter] = Tree(data, self.max_depth, self.features, self.loss_function, iter, logger)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
+        printtree(self.trees[1])
 
 
 class GradientBoostingRegressor(BaseGradientBoosting):

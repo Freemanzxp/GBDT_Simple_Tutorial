@@ -5,7 +5,7 @@ Created on ：2019/03/30
 
 
 class Node:
-    def __init__(self, data_index, logger=None, split_feature=None, split_value=None, is_leaf=False, loss_function=None):
+    def __init__(self, data_index, logger=None, split_feature=None, split_value=None, is_leaf=False, loss_function=None, target_name =None, deep = None ):
         self.loss_function = loss_function
         self.split_feature = split_feature
         self.split_value = split_value
@@ -15,6 +15,8 @@ class Node:
         self.left_child = None
         self.right_child = None
         self.logger = logger
+        self.name = target_name
+        self.deep = deep
 
     def update_predict_value(self, targets, y):
         self.predict_value = self.loss_function.update_leaf_values(targets, y)
@@ -39,9 +41,9 @@ class Tree:
         self.target_name = 'res_' + str(iter)
         self.remain_index = [True] * len(data)
         self.leaf_nodes = []
-        self.root_node = self.build_tree(data, self.remain_index, depth=0)
+        self.root_node = self.build_tree(data, self.remain_index, target_name = self.target_name,depth=0)
 
-    def build_tree(self, data, remain_index, depth=0):
+    def build_tree(self, data, remain_index, target_name, depth=0):
         now_data = data[remain_index]
         if depth < self.max_depth:
             mse = None
@@ -71,7 +73,7 @@ class Tree:
             self.logger.info(('--最佳划分特征：', split_feature))
             self.logger.info(('--最佳划分值：', split_value))
 
-            node = Node(remain_index, self.logger, split_feature, split_value)
+            node = Node(remain_index, self.logger, split_feature, split_value, target_name=target_name, deep=depth)
             # trick for DataFrame, index revert
             left_index_of_all_data = []
             for i in remain_index:
@@ -97,11 +99,11 @@ class Tree:
                 else:
                     right_index_of_all_data.append(False)
 
-            node.left_child = self.build_tree(data, left_index_of_all_data,  depth + 1)
-            node.right_child = self.build_tree(data, right_index_of_all_data, depth + 1)
+            node.left_child = self.build_tree(data, left_index_of_all_data, target_name ,depth + 1)
+            node.right_child = self.build_tree(data, right_index_of_all_data, target_name, depth + 1)
             return node
         else:
-            node = Node(remain_index, self.logger, is_leaf=True, loss_function=self.loss_function)
+            node = Node(remain_index, self.logger, is_leaf=True, loss_function=self.loss_function,target_name=target_name, deep=depth)
             node.update_predict_value(now_data[self.target_name], now_data['label'])
             self.leaf_nodes.append(node)
             return node

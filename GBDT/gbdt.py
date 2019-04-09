@@ -2,10 +2,12 @@
 Created on ：2019/03/28
 @author: Freeman
 """
+import abc
+import math
 import logging
 import pandas as pd
 from GBDT.decision_tree import Tree
-from GBDT.loss_function import SquaresError
+from GBDT.loss_function import SquaresError, BinomialDeviance
 
 logging.basicConfig(level= logging.INFO)
 logger = logging.getLogger()
@@ -13,10 +15,14 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 
-class DecisionTreeRegressor:
+class AbstractBaseGradientBoosting(metaclass=abc.ABCMeta):
+    def __init__(self):
+        pass
+
+class BaseGradientBoosting(AbstractBaseGradientBoosting):
 
     def __init__(self, loss_function, learning_rate, n_trees, max_depth, is_log=False):
-
+        super().__init__()
         self.loss_function = loss_function
         self.learning_rate = learning_rate
         self.n_trees = n_trees
@@ -42,8 +48,13 @@ class DecisionTreeRegressor:
             # 计算负梯度--对于平方误差来说就是残差
             logger.info(('-----------------------------构建第%d颗树-----------------------------' % iter))
             self.loss_function.calculate_residual(data, iter)
-            self.trees[iter] = Tree(data, self.max_depth, self.features, iter,logger)
-            self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate,logger)
+            self.trees[iter] = Tree(data, self.max_depth, self.features, self.loss_function, iter, logger)
+            self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
+
+
+class GradientBoostingRegressor(BaseGradientBoosting):
+    def __init__(self, learning_rate, n_trees, max_depth, is_log=False):
+        super().__init__(SquaresError(), learning_rate, n_trees, max_depth, is_log)
 
     def predict(self, data):
         data['f_0'] = self.f_0
@@ -56,19 +67,16 @@ class DecisionTreeRegressor:
         data['predict_value'] = data[f_m_name]
 
 
-if __name__ == '__main__':
+class GradientBoostingClassifier(BaseGradientBoosting):
+    def __init__(self, learning_rate, n_trees, max_depth, is_log=False):
+        super().__init__(BinomialDeviance(), learning_rate, n_trees, max_depth, is_log)
 
-    data = pd.DataFrame(data=[[1, 5, 20, 1.1],
-                        [2, 7, 30, 1.3],
-                        [3, 21, 70, 1.7],
-                        [4, 30, 60, 1.8],
-                        ], columns=['id', 'age', 'weight', 'label'])
-    loss_function = SquaresError()
-    model = DecisionTreeRegressor(loss_function=loss_function, learning_rate=0.1, n_trees=10, max_depth=2,is_log=False)
-    model.fit(data)
-    logger.info(data)
-    test_data = pd.DataFrame(data=[[5, 25, 65],
-                      ], columns=['id', 'age', 'weight'])
-    model.predict(test_data)
-    logger.setLevel(logging.INFO)
-    logger.info((test_data['predict_value']))
+    def predict(self, data):
+        data['f_0'] = self.f_0
+        for iter in range(1, self.n_trees + 1):
+            f_prev_name = 'f_' + str(iter - 1)
+            f_m_name = 'f_' + str(iter)
+            data[f_m_name] = data[f_prev_name] + \
+                             self.learning_rate * \
+                             data.apply(lambda x: self.trees[iter].root_node.get_predict_value(x), axis=1)
+        data['predict_value'] = data[f_m_name].apply(lambda x: 1 / (1 + math.exp(-x)))

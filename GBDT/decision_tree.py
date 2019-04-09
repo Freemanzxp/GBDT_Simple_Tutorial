@@ -5,7 +5,8 @@ Created on ：2019/03/30
 
 
 class Node:
-    def __init__(self, data_index,logger=None, split_feature=None, split_value=None, is_leaf=False):
+    def __init__(self, data_index, logger=None, split_feature=None, split_value=None, is_leaf=False, loss_function=None):
+        self.loss_function = loss_function
         self.split_feature = split_feature
         self.split_value = split_value
         self.data_index = data_index
@@ -15,8 +16,8 @@ class Node:
         self.right_child = None
         self.logger = logger
 
-    def update_predict_value(self, data):
-        self.predict_value = data.mean()
+    def update_predict_value(self, targets, y):
+        self.predict_value = self.loss_function.update_leaf_values(targets, y)
         self.logger.info(('叶子节点预测值：', self.predict_value))
 
     def get_predict_value(self, instance):
@@ -30,7 +31,8 @@ class Node:
 
 
 class Tree:
-    def __init__(self, data, max_depth, features, iter,logger):
+    def __init__(self, data, max_depth, features, loss_function, iter, logger):
+        self.loss_function = loss_function
         self.max_depth = max_depth
         self.features = features
         self.logger = logger
@@ -99,8 +101,8 @@ class Tree:
             node.right_child = self.build_tree(data, right_index_of_all_data, depth + 1)
             return node
         else:
-            node = Node(remain_index, self.logger, is_leaf=True)
-            node.update_predict_value(now_data[self.target_name])
+            node = Node(remain_index, self.logger, is_leaf=True, loss_function=self.loss_function)
+            node.update_predict_value(now_data[self.target_name], now_data['label'])
             self.leaf_nodes.append(node)
             return node
 

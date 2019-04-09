@@ -35,18 +35,18 @@ class Tree:
         self.features = features
         self.logger = logger
         self.target_name = 'res_' + str(iter)
-        self.remian_index = [True] * len(data)
+        self.remain_index = [True] * len(data)
         self.leaf_nodes = []
-        self.root_node = self.build_tree(data, self.remian_index, depth=0)
+        self.root_node = self.build_tree(data, self.remain_index, depth=0)
 
-    def build_tree(self, data, remian_index, depth=0):
-        now_data = data[remian_index]
+    def build_tree(self, data, remain_index, depth=0):
+        now_data = data[remain_index]
         if depth < self.max_depth:
             mse = None
             split_feature = None
             split_value = None
-            split_left_index = None
-            split_right_index = None
+            left_index_of_now_data = None
+            right_index_of_now_data = None
             self.logger.info(('--树的深度：%d' % depth))
             for feature in self.features:
                 self.logger.info(('----划分特征：', feature))
@@ -64,42 +64,42 @@ class Tree:
                         split_feature = feature
                         split_value = fea_val
                         mse = sum_mse
-                        split_left_index = left_index
-                        split_right_index = right_index
+                        left_index_of_now_data = left_index
+                        right_index_of_now_data = right_index
             self.logger.info(('--最佳划分特征：', split_feature))
             self.logger.info(('--最佳划分值：', split_value))
 
-            node = Node(remian_index, self.logger, split_feature, split_value)
+            node = Node(remain_index, self.logger, split_feature, split_value)
             # trick for DataFrame, index revert
-            a = []
-            for i in remian_index:
+            left_index_of_all_data = []
+            for i in remain_index:
                 if i:
-                    if split_left_index[0]:
-                        a.append(True)
-                        del split_left_index[0]
+                    if left_index_of_now_data[0]:
+                        left_index_of_all_data.append(True)
+                        del left_index_of_now_data[0]
                     else:
-                        a.append(False)
-                        del split_left_index[0]
+                        left_index_of_all_data.append(False)
+                        del left_index_of_now_data[0]
                 else:
-                    a.append(False)
+                    left_index_of_all_data.append(False)
 
-            b = []
-            for i in remian_index:
+            right_index_of_all_data = []
+            for i in remain_index:
                 if i:
-                    if split_right_index[0]:
-                        b.append(True)
-                        del split_right_index[0]
+                    if right_index_of_now_data[0]:
+                        right_index_of_all_data.append(True)
+                        del right_index_of_now_data[0]
                     else:
-                        b.append(False)
-                        del split_right_index[0]
+                        right_index_of_all_data.append(False)
+                        del right_index_of_now_data[0]
                 else:
-                    b.append(False)
+                    right_index_of_all_data.append(False)
 
-            node.left_child = self.build_tree(data, a,  depth + 1)
-            node.right_child = self.build_tree(data, b, depth + 1)
+            node.left_child = self.build_tree(data, left_index_of_all_data,  depth + 1)
+            node.right_child = self.build_tree(data, right_index_of_all_data, depth + 1)
             return node
         else:
-            node = Node(remian_index, self.logger, is_leaf=True)
+            node = Node(remain_index, self.logger, is_leaf=True)
             node.update_predict_value(now_data[self.target_name])
             self.leaf_nodes.append(node)
             return node

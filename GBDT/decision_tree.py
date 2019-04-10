@@ -33,9 +33,10 @@ class Node:
 
 
 class Tree:
-    def __init__(self, data, max_depth, features, loss_function, iter, logger):
+    def __init__(self, data, max_depth, min_samples_split, features, loss_function, iter, logger):
         self.loss_function = loss_function
         self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
         self.features = features
         self.logger = logger
         self.target_name = 'res_' + str(iter)
@@ -45,7 +46,9 @@ class Tree:
 
     def build_tree(self, data, remain_index, target_name, depth=0):
         now_data = data[remain_index]
-        if depth < self.max_depth:
+        # 如果 深度没有到达最大 以及 节点样本数>=min_samples_split 就继续生长
+        # 否则 停止生长 变成叶子节点
+        if depth < self.max_depth and len(now_data) >= self.min_samples_split:
             mse = None
             split_feature = None
             split_value = None
@@ -99,7 +102,7 @@ class Tree:
                 else:
                     right_index_of_all_data.append(False)
 
-            node.left_child = self.build_tree(data, left_index_of_all_data, target_name ,depth + 1)
+            node.left_child = self.build_tree(data, left_index_of_all_data, target_name, depth + 1)
             node.right_child = self.build_tree(data, right_index_of_all_data, target_name, depth + 1)
             return node
         else:

@@ -22,12 +22,14 @@ class AbstractBaseGradientBoosting(metaclass=abc.ABCMeta):
 
 class BaseGradientBoosting(AbstractBaseGradientBoosting):
 
-    def __init__(self, loss_function, learning_rate, n_trees, max_depth, is_log=False, is_plot=False):
+    def __init__(self, loss_function, learning_rate, n_trees, max_depth,
+                 min_samples_split=2, is_log=False, is_plot=False):
         super().__init__()
         self.loss_function = loss_function
         self.learning_rate = learning_rate
         self.n_trees = n_trees
         self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
         self.features = None
         self.trees = {}
         self.f_0 = None
@@ -49,15 +51,18 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             # 计算负梯度--对于平方误差来说就是残差
             logger.info(('-----------------------------构建第%d颗树-----------------------------' % iter))
             self.loss_function.calculate_residual(data, iter)
-            self.trees[iter] = Tree(data, self.max_depth, self.features, self.loss_function, iter, logger)
+            self.trees[iter] = Tree(data, self.max_depth, self.min_samples_split,
+                                    self.features, self.loss_function, iter, logger)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
             if self.is_plot:
                 printtree(self.trees[iter])
 
 
 class GradientBoostingRegressor(BaseGradientBoosting):
-    def __init__(self, learning_rate, n_trees, max_depth, is_log=False):
-        super().__init__(SquaresError(), learning_rate, n_trees, max_depth, is_log)
+    def __init__(self, learning_rate, n_trees, max_depth,
+                 min_samples_split=2, is_log=False, is_plot=False):
+        super().__init__(SquaresError(), learning_rate, n_trees, max_depth,
+                         min_samples_split, is_log, is_plot)
 
     def predict(self, data):
         data['f_0'] = self.f_0
@@ -71,8 +76,10 @@ class GradientBoostingRegressor(BaseGradientBoosting):
 
 
 class GradientBoostingClassifier(BaseGradientBoosting):
-    def __init__(self, learning_rate, n_trees, max_depth, is_log=False):
-        super().__init__(BinomialDeviance(), learning_rate, n_trees, max_depth, is_log)
+    def __init__(self, learning_rate, n_trees, max_depth,
+                 min_samples_split=2, is_log=False, is_plot=False):
+        super().__init__(BinomialDeviance(), learning_rate, n_trees, max_depth,
+                         min_samples_split, is_log, is_plot)
 
     def predict(self, data):
         data['f_0'] = self.f_0

@@ -19,9 +19,10 @@ class AbstractBaseGradientBoosting(metaclass=abc.ABCMeta):
     def __init__(self):
         pass
 
+
 class BaseGradientBoosting(AbstractBaseGradientBoosting):
 
-    def __init__(self, loss_function, learning_rate, n_trees, max_depth, is_log=False):
+    def __init__(self, loss_function, learning_rate, n_trees, max_depth, is_log=False, is_plot=False):
         super().__init__()
         self.loss_function = loss_function
         self.learning_rate = learning_rate
@@ -31,13 +32,13 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
         self.trees = {}
         self.f_0 = None
         self.is_log = is_log
+        self.is_plot = is_plot
 
     def fit(self, data):
-        '''
-        :param x: pandas.DataFrame, the features data of train training  
-        :param y: list, the label of training
-        '''
-        # 去头掐尾， 删除id和label，得到特征名称
+        """
+        :param data: pandas.DataFrame, the features data of train training   
+        """
+        # 掐头去尾， 删除id和label，得到特征名称
         self.features = list(data.columns)[1: -1]
         # 初始化 f_0(x)
         # 对于平方损失来说，初始化 f_0(x) 就是 y 的均值
@@ -50,7 +51,8 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             self.loss_function.calculate_residual(data, iter)
             self.trees[iter] = Tree(data, self.max_depth, self.features, self.loss_function, iter, logger)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
-            printtree(self.trees[iter])
+            if self.is_plot:
+                printtree(self.trees[iter])
 
 
 class GradientBoostingRegressor(BaseGradientBoosting):

@@ -3,3 +3,4 @@ __pycache__/
 .idea/
 *.py[cod]
 *$py.class
+*.png

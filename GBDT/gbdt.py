@@ -50,7 +50,7 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             self.loss_function.calculate_residual(data, iter)
             self.trees[iter] = Tree(data, self.max_depth, self.features, self.loss_function, iter, logger)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
-        printtree(self.trees[1])
+            printtree(self.trees[iter])
 
 
 class GradientBoostingRegressor(BaseGradientBoosting):

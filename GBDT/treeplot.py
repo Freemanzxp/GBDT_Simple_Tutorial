@@ -1,40 +1,25 @@
 import pydotplus as pdp
 from PIL import Image
 import pydotplus as pdp
-import matplotlib.pyplot as plt # plt 用于显示图片
-import matplotlib.image as mpimg # mpimg 用于读取图片
 from GBDT.decision_tree import Node
 def printtree(tree):
     root = tree.root_node
     solve(root)
-    a=1
 
-def bianli(root:Node, res: list):
+def traversal(root:Node, res: list):
     if (root == None):
         return
     if (root.left_child != None):
         res.append([root, root.left_child])
-        bianli(root.left_child, res)
+        traversal(root.left_child, res)
     if (root.right_child != None):
         res.append([root, root.right_child])
-        bianli(root.right_child, res)
-
-
-    # if root.left_child == None and root.right_child == None:
-    #     return str(root.data_index)
-    # nownode = str(root.data_index)
-    # data = ''
-    # if root.left_child != None:
-    #     data = data+'['+nownode+'l->'+bianli(root.left_child)+']'
-    # if root.right_child != None:
-    #     data = data+'['+nownode+'l->'+bianli(root.right_child)+']'
-    # return data
+        traversal(root.right_child, res)
 
 def solve(root):
     res = []
-    bianli(root, res)
+    traversal(root, res)
 
-    print(res)
     nodes = {}
     index = 0
     for i in res:
@@ -46,16 +31,19 @@ def solve(root):
             nodes[index] = c
             index = index+1
     edges = ''
-    ss = ''
+    node = ''
     for i in res:
         p,c = i[0],i[1]
         pname = str(list(nodes.keys())[list(nodes.values()).index(p)])
         cname = str(list(nodes.keys())[list(nodes.values()).index(c)])
-        print(pname,cname)
-        edges = edges+pname+'->'+cname+';\n'
-        ss = ss + pname+'[shape=box,label=\"'+str(p.data_index)+'\"];\n'+cname + '[shape=box,label=\"' + str(c.data_index) + '\"];\n'
-    dot = '''digraph g {\n'''+edges+ss+'''}'''
-    print(dot)
+
+
+        edges = edges+pname+'->'+cname+'[label=\"'+str(p.split_feature) + ('<' if p.left_child ==c else '>=') + str(p.split_value)+'\"]'+';\n'
+        node = node + pname+'[shape=ellipse,label=\"data_index:'+str([i for i in range(len(p.data_index)) if p.data_index[i] is True])\
+             +'\nsplit_feature:'+str(p.split_feature)+'\nsplit_value:'+str(p.split_value)+'\"];\n'+\
+             cname + '[shape=ellipse,label=\"data_index:' + str([i for i in range(len(c.data_index)) if c.data_index[i] is True]) + \
+               ('\npredict_value:'+str("{:.4f}".format(c.predict_value)) if c.is_leaf else '')+'\"];\n'
+    dot = '''digraph g {\n'''+edges+node+'''}'''
     graph = pdp.graph_from_dot_data(dot)
     graph.write_png('1.png')
     img = Image.open('1.png')

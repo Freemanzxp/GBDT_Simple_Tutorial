@@ -3,7 +3,7 @@ import pydotplus as pdp
 from GBDT.decision_tree import Node
 
 
-def printtree(tree):
+def print_tree(tree):
     root = tree.root_node
     solve(root)
 

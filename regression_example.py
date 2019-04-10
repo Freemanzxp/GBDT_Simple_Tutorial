@@ -19,7 +19,7 @@ if __name__ == '__main__':
                         [4, 30, 60, 1.8],
                         ], columns=['id', 'age', 'weight', 'label'])
     loss_function = SquaresError()
-    model = GradientBoostingRegressor(learning_rate=0.1, n_trees=10, max_depth=5, is_log=False)
+    model = GradientBoostingRegressor(learning_rate=0.1, n_trees=10, max_depth=3, is_log=False)
     model.fit(data)
     logger.info(data)
     test_data = pd.DataFrame(data=[[5, 25, 65]], columns=['id', 'age', 'weight'])

@@ -24,7 +24,43 @@ def plot_all_trees():
             plt.title('NO.{} tree'.format(index))
             plt.imshow(img)
     plt.savefig('trees_png/trees.png',dpi=300)
+    image_compose()
     plt.show()
+def image_compose():
+    png_list = os.listdir('../trees_png')
+    png_to_compose = [png for png in png_list if png.find('trees') ]
+    print(png_to_compose)
+    try:
+        path = os.path.join('../trees_png', png_to_compose[0])
+        shape = Image.open(path).size
+    except:
+        raise  IOError('no pngs can be compose')
+    IMAGE_WIDTH = shape[0]
+    IMAGE_HEIGET = shape[1]
+    IMAGE_COLUMN = 3
+
+    if len(png_to_compose)/IMAGE_COLUMN - int(len(png_to_compose)/IMAGE_COLUMN) >0.0000001:
+        IMAGE_ROW = int(len(png_to_compose)/IMAGE_COLUMN)+1
+    else:
+        IMAGE_ROW = int(len(png_to_compose) / IMAGE_COLUMN)
+    to_image = Image.new('RGB',(IMAGE_COLUMN*IMAGE_WIDTH,IMAGE_ROW*IMAGE_HEIGET),'#FFFFFF')
+    for y in  range(IMAGE_ROW):
+        for x in range(IMAGE_COLUMN):
+            if y*IMAGE_COLUMN+x+1>len(png_to_compose):
+                break
+            path = os.path.join('../trees_png','NO.'+str(y*IMAGE_COLUMN+x+1)+'_tree.png')
+            from_image = Image.open(path)
+            to_image.paste(from_image,(x*IMAGE_WIDTH,y*IMAGE_HEIGET))
+
+    to_image.save('../trees_png/trees.png')
+
+
+
+
+
+
+
+
 def traversal(root: Node, res: list):
     if root is None:
         return
@@ -141,4 +177,5 @@ def solve(root,screen,max_depth,iter):
     # plt.show()
     # print(nodes)
 
-
+if __name__ =="__main__":
+    image_compose()

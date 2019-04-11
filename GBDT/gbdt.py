@@ -2,21 +2,26 @@
 Created on ：2019/03/28
 @author: Freeman
 """
+import os
 import abc
 import math
 import logging
 import pandas as pd
 from GBDT.decision_tree import Tree
 from GBDT.loss_function import SquaresError, BinomialDeviance
-from GBDT.tree_plot import print_tree
+from GBDT.tree_plot import print_tree,plot_all_trees
+import matplotlib.pyplot as plt
+import pygame
+from  PIL import Image
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
-
+pygame.init()
 
 class AbstractBaseGradientBoosting(metaclass=abc.ABCMeta):
     def __init__(self):
+        # self.screen = pygame.display.set_mode((1024, 700), 0, 0)
         pass
 
 
@@ -47,6 +52,7 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
         self.f_0 = self.loss_function.initialize_f_0(data)
         # 对 m = 1, 2, ..., M
         logger.setLevel(logging.INFO if self.is_log else logging.CRITICAL)
+        import pygame
         for iter in range(1, self.n_trees+1):
             # 计算负梯度--对于平方误差来说就是残差
             logger.info(('-----------------------------构建第%d颗树-----------------------------' % iter))
@@ -55,7 +61,14 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
                                     self.features, self.loss_function, iter, logger)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
             if self.is_plot:
-                print_tree(self.trees[iter])
+                self.screen=print_tree(self.trees[iter],screen=None,max_depth=self.max_depth,iter=iter)
+        plot_all_trees()
+
+
+
+
+
+
 
 
 class GradientBoostingRegressor(BaseGradientBoosting):

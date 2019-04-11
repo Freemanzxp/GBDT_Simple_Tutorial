@@ -24,4 +24,6 @@
 - | --- tree_plot.py 树的可视化
 - | - regression_example.py 回归测试文件
 - | - binary_classification_example.py 二分类测试文件
+## 运行指南
+- 回归测试：配置参数 `is_log` -- 是否打印树的生成过程, `is_plot` -- 是否可视化树的结构， 运行 `regression_example.py`
 

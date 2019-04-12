@@ -10,6 +10,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
 
 if __name__ == '__main__':
 
@@ -22,6 +25,8 @@ if __name__ == '__main__':
     model = GradientBoostingRegressor(learning_rate=0.1, n_trees=10, max_depth=3,
                                       min_samples_split=2, is_log=False, is_plot=True)
     model.fit(data)
+    logger.removeHandler(logger.handlers[-1])
+    logger.addHandler(logging.FileHandler('results/result.log'.format(iter),mode='w',encoding='utf-8'))
     logger.info(data)
     test_data = pd.DataFrame(data=[[5, 25, 65]], columns=['id', 'age', 'weight'])
     model.predict(test_data)

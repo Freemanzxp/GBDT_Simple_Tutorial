@@ -51,9 +51,13 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
         # 对于平方损失来说，初始化 f_0(x) 就是 y 的均值
         self.f_0 = self.loss_function.initialize_f_0(data)
         # 对 m = 1, 2, ..., M
-        logger.setLevel(logging.INFO if self.is_log else logging.CRITICAL)
-        import pygame
+        logger.handlers[1].setLevel(logging.INFO if self.is_log else logging.CRITICAL)
         for iter in range(1, self.n_trees+1):
+            if len(logger.handlers) > 2:
+                logger.removeHandler(logger.handlers[-1])
+            fh = logging.FileHandler('results/NO.{}_tree.log'.format(iter),mode='w',encoding='utf-8')
+            fh.setLevel(logging.DEBUG)
+            logger.addHandler(fh)
             # 计算负梯度--对于平方误差来说就是残差
             logger.info(('-----------------------------构建第%d颗树-----------------------------' % iter))
             self.loss_function.calculate_residual(data, iter)
@@ -62,7 +66,8 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
             if self.is_plot:
                 self.screen=print_tree(self.trees[iter],screen=None,max_depth=self.max_depth,iter=iter)
-        plot_all_trees()
+        if self.is_plot:
+            plot_all_trees(self.n_trees)
 
 
 

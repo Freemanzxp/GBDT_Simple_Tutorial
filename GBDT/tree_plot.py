@@ -1,40 +1,45 @@
 from PIL import Image
 import pydotplus as pdp
 from GBDT.decision_tree import Node
-import pygame
-import time
 import os
 import matplotlib.pyplot as plt
 def print_tree(tree,screen,max_depth,iter):
     root = tree.root_node
     return solve(root,screen,max_depth,iter)
 
-def plot_all_trees():
-    png_list = os.listdir('trees_png')
-    rows = int(len(png_list) / 3)
-    plt.figure(1)
+def plot_all_trees(numberOfTrees):
+    if numberOfTrees/ 3 -int(numberOfTrees/ 3) > 0.000001:
+        rows = int(numberOfTrees/ 3)+1
+    else:
+        rows = int(numberOfTrees/ 3)
+    plt.figure(1,figsize=(30,20))
     plt.axis('off')
-    plt.rcParams['figure.figsize'] = (30.0, 20.0)
-    for index in range(1, len(png_list) + 1):
-        path = os.path.join('trees_png', png_list[index - 1])
-        if os.path.isfile(path) and not path.find('trees'):
-            plt.subplot(rows + 1, 3, index)
+    try:
+        for index in range(1, numberOfTrees + 1):
+            path = os.path.join('results','NO.{}_tree.png'.format(index))
+            plt.subplot(rows, 3, index)
+
             img = Image.open(path)
+            img = img.resize((1000,800),Image.ANTIALIAS)
             plt.axis('off')
             plt.title('NO.{} tree'.format(index))
             plt.imshow(img)
-    plt.savefig('trees_png/trees.png',dpi=300)
-    image_compose()
-    plt.show()
-def image_compose():
-    png_list = os.listdir('trees_png')
-    png_to_compose = [png for png in png_list if png.find('trees') ]
-    print(png_to_compose)
+        plt.savefig('results/all_trees.png',dpi=300)
+        plt.show()
+        image_compose(numberOfTrees)
+
+    except Exception as e:
+        raise e
+
+def image_compose(numberOfTrees):
+    png_to_compose = []
+    for index in range(1,numberOfTrees+1):
+        png_to_compose.append('NO.{}_tree.png'.format(index))
     try:
-        path = os.path.join('trees_png', png_to_compose[0])
+        path = os.path.join('results', png_to_compose[0])
         shape = Image.open(path).size
-    except:
-        raise  IOError('no pngs can be compose')
+    except Exception as e:
+        raise e
     IMAGE_WIDTH = shape[0]
     IMAGE_HEIGET = shape[1]
     IMAGE_COLUMN = 3
@@ -48,11 +53,11 @@ def image_compose():
         for x in range(IMAGE_COLUMN):
             if y*IMAGE_COLUMN+x+1>len(png_to_compose):
                 break
-            path = os.path.join('trees_png','NO.'+str(y*IMAGE_COLUMN+x+1)+'_tree.png')
+            path = os.path.join('results','NO.'+str(y*IMAGE_COLUMN+x+1)+'_tree.png')
             from_image = Image.open(path)
             to_image.paste(from_image,(x*IMAGE_WIDTH,y*IMAGE_HEIGET))
 
-    to_image.save('trees_png/trees.png')
+    to_image.save('results/all_trees_high_quality.png')
 
 
 
@@ -102,9 +107,7 @@ def solve(root,screen,max_depth,iter):
             index = index+1
     edges = ''
     node = ''
-    nodes_in_depth = []
     for depth in range(max_depth):
-        index = 0
         for nodepair in res:
             if nodepair[0].deep == depth:
                 p, c = nodepair[0], nodepair[1]
@@ -127,27 +130,18 @@ def solve(root,screen,max_depth,iter):
                 continue
         dot = '''digraph g {\n''' + edges + node + '''}'''
         graph = pdp.graph_from_dot_data(dot)
-        graph.write_png('trees_png/NO.{}_tree.png'.format(iter))
-        img = Image.open('trees_png/NO.{}_tree.png'.format(iter))
+        graph.write_png('results/NO.{}_tree.png'.format(iter))
+        img = Image.open('results/NO.{}_tree.png'.format(iter))
         img = img.resize((1024, 700), Image.ANTIALIAS)
 
         plt.ion()
-        plt.figure(1)
+        plt.figure(1,figsize=(30,20))
         plt.axis('off')
         plt.title('NO.{} tree'.format(iter))
         plt.rcParams['figure.figsize'] = (30.0, 20.0)
-        # plt.rcParams['savefig.dpi'] = 300  # 图片像素
-        # plt.rcParams['figure.dpi'] = 300  # 分辨率
         plt.imshow(img)
         plt.pause(0.02)
         plt.close()
-        # img.save('1.png')
-
-        # img = pygame.image.load('1.png')
-        # # img = pygame.transform.scale(img,(1024,700))
-        # screen.blit(img, (0, 0))
-        # pygame.display.update()
-        # time.sleep(2)
     return screen
 
 
@@ -180,4 +174,6 @@ def solve(root,screen,max_depth,iter):
     # print(nodes)
 
 if __name__ =="__main__":
-    image_compose()
+    # plot_all_trees(10)
+    image_compose(10)
+

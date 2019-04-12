@@ -27,11 +27,11 @@ def plot_all_trees():
     image_compose()
     plt.show()
 def image_compose():
-    png_list = os.listdir('../trees_png')
+    png_list = os.listdir('trees_png')
     png_to_compose = [png for png in png_list if png.find('trees') ]
     print(png_to_compose)
     try:
-        path = os.path.join('../trees_png', png_to_compose[0])
+        path = os.path.join('trees_png', png_to_compose[0])
         shape = Image.open(path).size
     except:
         raise  IOError('no pngs can be compose')
@@ -48,11 +48,11 @@ def image_compose():
         for x in range(IMAGE_COLUMN):
             if y*IMAGE_COLUMN+x+1>len(png_to_compose):
                 break
-            path = os.path.join('../trees_png','NO.'+str(y*IMAGE_COLUMN+x+1)+'_tree.png')
+            path = os.path.join('trees_png','NO.'+str(y*IMAGE_COLUMN+x+1)+'_tree.png')
             from_image = Image.open(path)
             to_image.paste(from_image,(x*IMAGE_WIDTH,y*IMAGE_HEIGET))
 
-    to_image.save('../trees_png/trees.png')
+    to_image.save('trees_png/trees.png')
 
 
 
@@ -113,14 +113,16 @@ def solve(root,screen,max_depth,iter):
 
                 edges = edges + pname + '->' + cname + '[label=\"' + str(p.split_feature) + (
                     '<' if p.left_child == c else '>=') + str(p.split_value) + '\"]' + ';\n'
-                node = node + pname + '[shape=ellipse,label=\"data_index:' + str(
-                    [i for i in range(len(p.data_index)) if p.data_index[i] is True]) \
-                       + '\nsplit_feature:' + str(p.split_feature) + '\nsplit_value:' + str(p.split_value) + '\"];\n' + \
-                       cname + '[shape=ellipse,label=\"data_index:' + str(
-                    [i for i in range(len(c.data_index)) if c.data_index[i] is True]) + \
-                       ('\npredict_value:' + str("{:.4f}".format(c.predict_value)) if c.is_leaf else '') + '\"];\n'
+                node = node + pname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
+                    [i for i in range(len(p.data_index)) if p.data_index[i] is True]) + '\"];\n' + \
+                       cname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
+                    [i for i in range(len(c.data_index)) if c.data_index[i] is True]) + '\"];\n'
+                       # ('\npredict_value:' + str("{:.4f}".format(c.predict_value)) if c.is_leaf else '') + '\"];\n'
+                if c.is_leaf:
+                    edges = edges+cname+'->'+cname+'p[style=dotted];\n'
+                    node = node+ cname+'p[width=1,height=0.5,color=lightskyblue,style=filled,shape=box,label=\"'+str("{:.4f}".format(c.predict_value))+'\"];\n'
 
-                index = res.index(nodepair)
+
             else:
                 continue
         dot = '''digraph g {\n''' + edges + node + '''}'''
@@ -137,7 +139,7 @@ def solve(root,screen,max_depth,iter):
         # plt.rcParams['savefig.dpi'] = 300  # 图片像素
         # plt.rcParams['figure.dpi'] = 300  # 分辨率
         plt.imshow(img)
-        plt.pause(0.1)
+        plt.pause(0.02)
         plt.close()
         # img.save('1.png')
 

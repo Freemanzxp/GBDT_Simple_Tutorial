@@ -1,27 +1,22 @@
 """
 Created on ：2019/03/28
-@author: Freeman
+@author: Freeman, feverfc1994
 """
-import os
+
 import abc
 import math
 import logging
 import pandas as pd
 from GBDT.decision_tree import Tree
 from GBDT.loss_function import SquaresError, BinomialDeviance
-from GBDT.tree_plot import print_tree,plot_all_trees
-import matplotlib.pyplot as plt
-import pygame
-from  PIL import Image
+from GBDT.tree_plot import plot_tree,plot_all_trees
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
-pygame.init()
 
 class AbstractBaseGradientBoosting(metaclass=abc.ABCMeta):
     def __init__(self):
-        # self.screen = pygame.display.set_mode((1024, 700), 0, 0)
         pass
 
 
@@ -65,7 +60,7 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
                                     self.features, self.loss_function, iter, logger)
             self.loss_function.update_f_m(data, self.trees, iter, self.learning_rate, logger)
             if self.is_plot:
-                self.screen=print_tree(self.trees[iter],screen=None,max_depth=self.max_depth,iter=iter)
+                plot_tree(self.trees[iter],max_depth=self.max_depth,iter=iter)
         if self.is_plot:
             plot_all_trees(self.n_trees)
 

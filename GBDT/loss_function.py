@@ -1,6 +1,6 @@
 """
 Created on ：2019/03/30
-@author: Freeman
+@author: Freeman, foreverfc1994
 """
 import math
 

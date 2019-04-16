@@ -5,7 +5,6 @@ Created on ：2019/04/07
 import logging
 import pandas as pd
 from GBDT.gbdt import GradientBoostingRegressor
-from GBDT.loss_function import SquaresError
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
@@ -21,12 +20,11 @@ if __name__ == '__main__':
                         [3, 21, 70, 1.7],
                         [4, 30, 60, 1.8],
                         ], columns=['id', 'age', 'weight', 'label'])
-    loss_function = SquaresError()
     model = GradientBoostingRegressor(learning_rate=0.1, n_trees=10, max_depth=3,
                                       min_samples_split=2, is_log=False, is_plot=True)
     model.fit(data)
     logger.removeHandler(logger.handlers[-1])
-    logger.addHandler(logging.FileHandler('results/result.log'.format(iter),mode='w',encoding='utf-8'))
+    logger.addHandler(logging.FileHandler('results/result.log'.format(iter), mode='w', encoding='utf-8'))
     logger.info(data)
     test_data = pd.DataFrame(data=[[5, 25, 65]], columns=['id', 'age', 'weight'])
     model.predict(test_data)

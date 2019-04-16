@@ -5,8 +5,9 @@ Created on ：2019/03/30
 
 
 class Node:
-    def __init__(self, data_index, logger=None, split_feature=None, split_value=None, is_leaf=False, loss_function=None, target_name =None, deep = None ):
-        self.loss_function = loss_function
+    def __init__(self, data_index, logger=None, split_feature=None, split_value=None, is_leaf=False, loss=None,
+                 target_name=None, deep=None):
+        self.loss = loss
         self.split_feature = split_feature
         self.split_value = split_value
         self.data_index = data_index
@@ -19,7 +20,7 @@ class Node:
         self.deep = deep
 
     def update_predict_value(self, targets, y):
-        self.predict_value = self.loss_function.update_leaf_values(targets, y)
+        self.predict_value = self.loss.update_leaf_values(targets, y)
         self.logger.info(('叶子节点预测值：', self.predict_value))
 
     def get_predict_value(self, instance):
@@ -33,16 +34,16 @@ class Node:
 
 
 class Tree:
-    def __init__(self, data, max_depth, min_samples_split, features, loss_function, iter, logger):
-        self.loss_function = loss_function
+    def __init__(self, data, max_depth, min_samples_split, features, loss, target_name, logger):
+        self.loss = loss
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.features = features
         self.logger = logger
-        self.target_name = 'res_' + str(iter)
+        self.target_name = target_name
         self.remain_index = [True] * len(data)
         self.leaf_nodes = []
-        self.root_node = self.build_tree(data, self.remain_index, target_name = self.target_name,depth=0)
+        self.root_node = self.build_tree(data, self.remain_index, target_name=self.target_name, depth=0)
 
     def build_tree(self, data, remain_index, target_name, depth=0):
         now_data = data[remain_index]
@@ -66,7 +67,7 @@ class Tree:
                     right_mse = self._calculate_mse(now_data[right_index][self.target_name])
                     sum_mse = left_mse + right_mse
                     self.logger.info(('------划分值:%.3f,左节点损失:%.3f,右节点损失:%.3f,总损失:%.3f' %
-                          (fea_val, left_mse, right_mse, sum_mse)))
+                                      (fea_val, left_mse, right_mse, sum_mse)))
                     if mse is None or sum_mse < mse:
                         split_feature = feature
                         split_value = fea_val
@@ -106,8 +107,13 @@ class Tree:
             node.right_child = self.build_tree(data, right_index_of_all_data, target_name, depth + 1)
             return node
         else:
-            node = Node(remain_index, self.logger, is_leaf=True, loss_function=self.loss_function,target_name=target_name, deep=depth)
-            node.update_predict_value(now_data[self.target_name], now_data['label'])
+            node = Node(remain_index, self.logger, is_leaf=True, loss=self.loss,
+                        target_name=target_name, deep=depth)
+            if len(self.target_name.split('_')) == 3:
+                label_name = 'label_' + self.target_name.split('_')[1]
+            else:
+                label_name = 'label'
+            node.update_predict_value(now_data[self.target_name], now_data[label_name])
             self.leaf_nodes.append(node)
             return node
 

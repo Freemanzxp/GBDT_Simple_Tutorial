@@ -6,7 +6,7 @@
 - 回归 √
 - 二分类 √
 - 可视化 √ 
-- 多分类 
+- 多分类 √
 ***
 **算法原理以及公式推导请前往blog：**[GBDT算法原理以及实例理解](https://blog.csdn.net/zpalyq110/article/details/79527653)
 ***
@@ -24,6 +24,8 @@
 - | --- tree_plot.py 树的可视化
 - | - regression_example.py 回归测试文件
 - | - binary_classification_example.py 二分类测试文件
+- | - multi_classification_example.py 多分类测试文件
+
 ## 运行指南
 - 回归测试：配置参数 `is_log` -- 是否打印树的生成过程, `is_plot` -- 是否可视化树的结构， 运行 `regression_example.py`
 

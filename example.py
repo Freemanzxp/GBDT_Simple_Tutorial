@@ -57,14 +57,20 @@ def run(args):
         model = GradientBoostingBinaryClassifier(learning_rate=args.lr, n_trees=args.trees, max_depth=args.depth,
                                                  is_log=args.log, is_plot=args.plot)
     if args.model == 'multi_cf':
-        model = GradientBoostingMultiClassifier(learning_rate=args.lr, n_trees=args.trees, max_depth=args.depth, is_log=args.log,is_plot=False)
+        model = GradientBoostingMultiClassifier(learning_rate=args.lr, n_trees=args.trees, max_depth=args.depth, is_log=args.log,is_plot=args.plot)
     model.fit(data)
     logger.removeHandler(logger.handlers[-1])
     logger.addHandler(logging.FileHandler('results/result.log'.format(iter), mode='w', encoding='utf-8'))
     logger.info(data)
     model.predict(test_data)
     logger.setLevel(logging.INFO)
-    # logger.info((test_data['predict_value']))
+    if args.model == 'regression':
+        logger.info((test_data['predict_value']))
+    if args.model == 'binary_cf':
+        logger.info((test_data['predict_proba']))
+        logger.info((test_data['predict_label']))
+    if args.model == 'multi_cf':
+        logger.info((test_data['predict_label']))
     pass
 
 

@@ -9,6 +9,86 @@ from GBDT.decision_tree import Node, Tree
 import os
 import matplotlib.pyplot as plt
 
+def plot_multi(trees:dict,max_depth:int,iter:int):
+    trees_traversal = {}
+    trees_nodes = {}
+    for class_index in trees.keys():
+        tree = trees[class_index]
+        res = []
+        root = tree.root_node
+        traversal(root,res)
+        trees_traversal[class_index] = res
+        # 获取所有节点
+        nodes = {}
+        index = 0
+        for i in res:
+            p, c = i[0], i[1]
+            if p not in nodes.values():
+                nodes[index] = p
+                index = index + 1
+            if c not in nodes.values():
+                nodes[index] = c
+                index = index + 1
+        trees_nodes[class_index] = nodes
+        # 通过dot语法将决策树展示出来
+    trees_edges = {}
+    trees_node = {}
+    for class_index in trees.keys():
+        trees_node[class_index] = ''
+        trees_edges[class_index] = ''
+    for depth in range(max_depth):
+        for class_index in trees.keys():
+            for nodepair in trees_traversal[class_index]:
+                if nodepair[0].deep == depth:
+                    p, c = nodepair[0], nodepair[1]
+                    l = len([i for i in range(len(c.data_index)) if c.data_index[i] is True])
+                    pname = str(list(trees_nodes[class_index].keys())[list(trees_nodes[class_index].values()).index(p)])
+                    cname = str(list(trees_nodes[class_index].keys())[list(trees_nodes[class_index].values()).index(c)])
+                    if l > 0:
+                        trees_edges[class_index] = trees_edges[class_index] + pname + '->' + cname + '[label=\"' + str(p.split_feature) + (
+                            '<' if p.left_child == c else '>=') + str(p.split_value) + '\"]' + ';\n'
+
+                        trees_node[class_index] = trees_node[class_index] + pname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
+                        [i for i in range(len(p.data_index)) if p.data_index[i] is True]) + '\"];\n' + \
+                           (
+                               cname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
+                                   [i for i in range(len(c.data_index)) if
+                                    c.data_index[i] is True]) + '\"];\n' if l > 0 else '')
+                    if c.is_leaf and l > 0:
+                        trees_edges[class_index] = trees_edges[class_index] + cname + '->' + cname + 'p[style=dotted];\n'
+                        trees_node[class_index] = trees_node[class_index] + cname + 'p[width=1,height=0.5,color=lightskyblue,style=filled,shape=box,label=\"' + str(
+                            "{:.4f}".format(c.predict_value)) + '\"];\n'
+                else:
+                    continue
+            dot = '''digraph g {\n''' + trees_edges[class_index] + trees_node[class_index] + '''}'''
+            graph = pdp.graph_from_dot_data(dot)
+            # 保存图片+pyplot展示
+            graph.write_png('results/NO.{}_{}_tree.png'.format(iter, class_index))
+        plt.ion()
+        plt.figure(1, figsize=(30, 20))
+        plt.axis('off')
+        plt.title('NO.{} iter '.format(iter))
+        class_num = len(trees.keys())
+        if class_num / 3 - int(class_num / 3) <0.000001:
+            rows = int(class_num/3)
+        else:
+            rows = int(class_num/3)+1
+        for class_index in trees.keys():
+            index = list(trees.keys()).index(class_index)
+            plt.subplot(rows, 3, index+1)
+            img = Image.open('results/NO.{}_{}_tree.png'.format(iter, class_index))
+            img = img.resize((1024, 700), Image.ANTIALIAS)
+            plt.axis('off')
+            plt.title('class {}'.format(class_index))
+            plt.rcParams['figure.figsize'] = (30.0, 20.0)
+            plt.imshow(img)
+        plt.savefig('results/NO.{}_tree.png'.format(iter))
+        plt.pause(0.01)
+
+
+
+
+
 
 def plot_tree(tree: Tree, max_depth: int, iter: int):
     """
@@ -185,6 +265,6 @@ def traversal(root: Node, res: list):
 
 
 if __name__ =="__main__":
-    # plot_all_trees(10)
-    image_compose(10)
+    plot_all_trees(10)
+    # image_compose(10)
 

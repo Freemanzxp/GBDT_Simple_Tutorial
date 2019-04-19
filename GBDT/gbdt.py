@@ -9,7 +9,7 @@ import logging
 import pandas as pd
 from GBDT.decision_tree import Tree
 from GBDT.loss_function import SquaresError, BinomialDeviance, MultinomialDeviance
-from GBDT.tree_plot import plot_tree, plot_all_trees
+from GBDT.tree_plot import plot_tree, plot_all_trees,plot_multi
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 pd.set_option('display.max_columns', None)
@@ -146,11 +146,10 @@ class GradientBoostingMultiClassifier(BaseGradientBoosting):
                 self.trees[iter][class_name] = Tree(data, self.max_depth, self.min_samples_split,
                                                     self.features, self.loss, target_name, logger)
                 self.loss.update_f_m(data, self.trees, iter, class_name, self.learning_rate, logger)
-            print(self.trees)
-            #     if self.is_plot:
-            #         plot_tree(self.trees[iter], max_depth=self.max_depth, iter=iter)
-            # if self.is_plot:
-            #     plot_all_trees(self.n_trees)
+            if self.is_plot:
+                    plot_multi(self.trees[iter], max_depth=self.max_depth, iter=iter)
+        if self.is_plot:
+            plot_all_trees(self.n_trees)
 
     def predict(self, data):
         """

@@ -22,10 +22,20 @@
 - | --- decision_tree.py 单颗树生成，包括节点划分和叶子结点生成
 - | --- loss_function.py 损失函数
 - | --- tree_plot.py 树的可视化
-- | - regression_example.py 回归测试文件
-- | - binary_classification_example.py 二分类测试文件
-- | - multi_classification_example.py 多分类测试文件
+- | - example.py 回归/二分类/多分类测试文件
+
 
 ## 运行指南
-- 回归测试：配置参数 `is_log` -- 是否打印树的生成过程, `is_plot` -- 是否可视化树的结构， 运行 `regression_example.py`
+- 回归测试：
+
+    `python example.py --model = regression`
+- 二分类测试：
+
+    `python example.py --model = binary_cf`
+- 多分类测试：
+
+    `python example.py --model = multi_cf`
+- 其他可配置参数：`lr` -- 学习率   `trees` -- 构建的决策树数量即迭代次数    
+`depth` -- 决策树的深度   `count` -- 决策树节点分裂的最小数据数量
+`is_log` -- 是否打印树的生成过程, `is_plot` -- 是否可视化树的结构， 运行 `regression_example.py`
 

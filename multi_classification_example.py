@@ -19,7 +19,7 @@ if __name__ == '__main__':
                         [4, 30, 60, 3],
                         [4, 30, 70, 3],
                         ], columns=['id', 'age', 'weight', 'label'])
-    model = GradientBoostingMultiClassifier(learning_rate=0.1, n_trees=10, max_depth=2, is_log=False)
+    model = GradientBoostingMultiClassifier(learning_rate=0.1, n_trees=10, max_depth=2, is_log=False,is_plot=True)
     model.fit(data)
     logger.info(data)
     test_data = pd.DataFrame(data=[[5, 25, 65]], columns=['id', 'age', 'weight'])

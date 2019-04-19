@@ -53,9 +53,9 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
         # 对于平方损失来说，初始化 f_0(x) 就是 y 的均值
         self.f_0 = self.loss.initialize_f_0(data)
         # 对 m = 1, 2, ..., M
-        # logger.handlers[1].setLevel(logging.INFO if self.is_log else logging.CRITICAL)
+        logger.handlers[0].setLevel(logging.INFO if self.is_log else logging.CRITICAL)
         for iter in range(1, self.n_trees+1):
-            if len(logger.handlers) > 2:
+            if len(logger.handlers) > 1:
                 logger.removeHandler(logger.handlers[-1])
             fh = logging.FileHandler('results/NO.{}_tree.log'.format(iter), mode='w', encoding='utf-8')
             fh.setLevel(logging.DEBUG)
@@ -69,6 +69,7 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             self.loss.update_f_m(data, self.trees, iter, self.learning_rate, logger)
             if self.is_plot:
                 plot_tree(self.trees[iter], max_depth=self.max_depth, iter=iter)
+        print(self.trees)
         if self.is_plot:
             plot_all_trees(self.n_trees)
 
@@ -127,11 +128,11 @@ class GradientBoostingMultiClassifier(BaseGradientBoosting):
             data[label_name] = data['label'].apply(lambda x: 1 if str(x) == class_name else 0)
             # 初始化 f_0(x)
             self.f_0[class_name] = self.loss.initialize_f_0(data, class_name)
-        print(data)
+        # print(data)
         # 对 m = 1, 2, ..., M
-        # logger.handlers[1].setLevel(logging.INFO if self.is_log else logging.CRITICAL)
+        logger.handlers[0].setLevel(logging.INFO if self.is_log else logging.CRITICAL)
         for iter in range(1, self.n_trees + 1):
-            if len(logger.handlers) > 2:
+            if len(logger.handlers) > 1:
                 logger.removeHandler(logger.handlers[-1])
             fh = logging.FileHandler('results/NO.{}_tree.log'.format(iter), mode='w', encoding='utf-8')
             fh.setLevel(logging.DEBUG)
@@ -145,6 +146,11 @@ class GradientBoostingMultiClassifier(BaseGradientBoosting):
                 self.trees[iter][class_name] = Tree(data, self.max_depth, self.min_samples_split,
                                                     self.features, self.loss, target_name, logger)
                 self.loss.update_f_m(data, self.trees, iter, class_name, self.learning_rate, logger)
+            print(self.trees)
+            #     if self.is_plot:
+            #         plot_tree(self.trees[iter], max_depth=self.max_depth, iter=iter)
+            # if self.is_plot:
+            #     plot_all_trees(self.n_trees)
 
     def predict(self, data):
         """

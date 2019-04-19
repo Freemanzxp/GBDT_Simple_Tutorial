@@ -21,7 +21,7 @@ if __name__ == '__main__':
                         [4, 30, 60, 1.8],
                         ], columns=['id', 'age', 'weight', 'label'])
     model = GradientBoostingRegressor(learning_rate=0.1, n_trees=10, max_depth=3,
-                                      min_samples_split=2, is_log=False, is_plot=True)
+                                      min_samples_split=2, is_log=False, is_plot=False)
     model.fit(data)
     logger.removeHandler(logger.handlers[-1])
     logger.addHandler(logging.FileHandler('results/result.log'.format(iter), mode='w', encoding='utf-8'))

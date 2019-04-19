@@ -20,7 +20,6 @@ def plot_tree(tree: Tree, max_depth: int, iter: int):
     """
     root = tree.root_node
     res = []
-
     # 通过遍历获取决策树的父子节点关系，可选有traversal 层次遍历 和traversal_preorder 先序遍历
     traversal(root, res)
 
@@ -45,15 +44,18 @@ def plot_tree(tree: Tree, max_depth: int, iter: int):
             if nodepair[0].deep == depth:
                 # p,c分别为节点对中的父节点和子节点
                 p, c = nodepair[0], nodepair[1]
+                l = len([i for i in range(len(c.data_index)) if c.data_index[i] is True])
                 pname = str(list(nodes.keys())[list(nodes.values()).index(p)])
                 cname = str(list(nodes.keys())[list(nodes.values()).index(c)])
-                edges = edges + pname + '->' + cname + '[label=\"' + str(p.split_feature) + (
-                    '<' if p.left_child == c else '>=') + str(p.split_value) + '\"]' + ';\n'
+                if l > 0:
+                    edges = edges + pname + '->' + cname + '[label=\"' + str(p.split_feature) + (
+                        '<' if p.left_child == c else '>=') + str(p.split_value) + '\"]' + ';\n'
+
                 node = node + pname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
                     [i for i in range(len(p.data_index)) if p.data_index[i] is True]) + '\"];\n' + \
-                       cname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
-                    [i for i in range(len(c.data_index)) if c.data_index[i] is True]) + '\"];\n'
-                if c.is_leaf:
+                       (cname + '[width=1,height=0.5,color=lemonchiffon,style=filled,shape=ellipse,label=\"id:' + str(
+                    [i for i in range(len(c.data_index)) if c.data_index[i] is True]) + '\"];\n' if l > 0 else '')
+                if c.is_leaf and l > 0:
                     edges = edges + cname + '->' + cname + 'p[style=dotted];\n'
                     node = node + cname + 'p[width=1,height=0.5,color=lightskyblue,style=filled,shape=box,label=\"' + str(
                         "{:.4f}".format(c.predict_value)) + '\"];\n'
@@ -71,7 +73,7 @@ def plot_tree(tree: Tree, max_depth: int, iter: int):
         plt.title('NO.{} tree'.format(iter))
         plt.rcParams['figure.figsize'] = (30.0, 20.0)
         plt.imshow(img)
-        plt.pause(0.1)
+        plt.pause(0.01)
 
 
 def plot_all_trees(numberOfTrees: int):

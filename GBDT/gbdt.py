@@ -69,7 +69,7 @@ class BaseGradientBoosting(AbstractBaseGradientBoosting):
             self.loss.update_f_m(data, self.trees, iter, self.learning_rate, logger)
             if self.is_plot:
                 plot_tree(self.trees[iter], max_depth=self.max_depth, iter=iter)
-        print(self.trees)
+        # print(self.trees)
         if self.is_plot:
             plot_all_trees(self.n_trees)
 

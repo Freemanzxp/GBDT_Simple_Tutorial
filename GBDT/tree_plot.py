@@ -9,7 +9,8 @@ from GBDT.decision_tree import Node, Tree
 import os
 import matplotlib.pyplot as plt
 
-def plot_multi(trees:dict,max_depth:int,iter:int):
+
+def plot_multi(trees: dict, max_depth: int, iter: int):
     trees_traversal = {}
     trees_nodes = {}
     for class_index in trees.keys():
@@ -79,15 +80,11 @@ def plot_multi(trees:dict,max_depth:int,iter:int):
             img = Image.open('results/NO.{}_{}_tree.png'.format(iter, class_index))
             img = img.resize((1024, 700), Image.ANTIALIAS)
             plt.axis('off')
-            plt.title('class {}'.format(class_index))
+            plt.title('NO.{}_class {}'.format(iter, class_index))
             plt.rcParams['figure.figsize'] = (30.0, 20.0)
             plt.imshow(img)
         plt.savefig('results/NO.{}_tree.png'.format(iter))
         plt.pause(0.01)
-
-
-
-
 
 
 def plot_tree(tree: Tree, max_depth: int, iter: int):

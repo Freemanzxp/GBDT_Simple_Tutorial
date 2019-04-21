@@ -5,8 +5,8 @@
 ## 项目进度：
 - [x] 回归 
 - [x] 二分类 
-- [x] 可视化 
 - [x] 多分类
+- [x] 可视化 
 ***
 **算法原理以及公式推导请前往blog：**[GBDT算法原理以及实例理解](https://blog.csdn.net/zpalyq110/article/details/79527653)
 ***

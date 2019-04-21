@@ -1,7 +1,7 @@
 # GBDT_Simple_Tutorial（梯度提升树简易教程）
 ## 简介
 利用python实现GBDT算法的回归、二分类以及多分类，将算法流程详情进行展示解读并可视化，便于读者庖丁解牛地理解GBDT。
-***
+
 ## 项目进度：
 - [x] 回归 
 - [x] 二分类 
@@ -16,6 +16,7 @@
 - Python库：pandas、PIL、pydotplus，
  其中pydotplus库会自动调用Graphviz，所以需要去[Graphviz官网](https://graphviz.gitlab.io/_pages/Download/Download_windows.html)下载`graphviz的-2.38.msi`
 ，先安装，再将安装目录下的`bin`添加到系统环境变量，此时如果再报错可以重启计算机。详细过程不再描述，网上很多解答。
+
 ## 文件结构
 - | - GBDT 主模块文件夹
 - | --- gbdt.py 梯度提升算法主框架

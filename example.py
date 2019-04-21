@@ -91,7 +91,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', default='regression', help='the model you want to use',
                         choices=['regression', 'binary_cf', 'multi_cf'])
     parser.add_argument('--lr', default=0.1, type=int, help='learning rate')
-    parser.add_argument('--trees', default=10, type=int, help='the number of decision trees')
+    parser.add_argument('--trees', default=5, type=int, help='the number of decision trees')
     parser.add_argument('--depth', default=3, type=int, help='the max depth of decision trees')
     # 非叶节点的最小数据数目，如果一个节点只有一个数据，那么该节点就是一个叶子节点，停止往下划分
     parser.add_argument('--count', default=2, type=int, help='the min data count of a node')

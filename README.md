@@ -3,10 +3,10 @@
 利用python实现GBDT算法的回归、二分类以及多分类，将算法流程详情进行展示解读并可视化，便于读者庖丁解牛地理解GBDT。
 ***
 ## 项目进度：
-- 回归 √
-- 二分类 √
-- 可视化 √ 
-- 多分类 √
+- [x] 回归 
+- [x] 二分类 
+- [x] 可视化 
+- [x] 多分类
 ***
 **算法原理以及公式推导请前往blog：**[GBDT算法原理以及实例理解](https://blog.csdn.net/zpalyq110/article/details/79527653)
 ***
@@ -40,3 +40,7 @@
 `is_log` -- 是否打印树的生成过程, `is_plot` -- 是否可视化树的结构.
 - 结果文件： 运行后会生成`results`文件夹,里面包含了每棵树的内部结构和生成日志
 
+
+## 结果展示
+仅展示最后所有树的集合，具体每棵树的详细信息望读者自行运行代码~
+<img src="https://github.com/Freemanzxp/GBDT_Simple_Tutorial/raw/master/展示图片/all_trees.png"/>

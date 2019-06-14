@@ -120,7 +120,7 @@ class MultinomialDeviance:
             label_name = 'label_' + class_name
             res_name = 'res_' + class_name + '_' + str(iter)
             f_prev_name = 'f_' + class_name + '_' + str(iter - 1)
-            data[res_name] = data[label_name] - data[f_prev_name] / data['sum_exp']
+            data[res_name] = data[label_name] - math.e ** data[f_prev_name] / data['sum_exp']
 
     def update_f_m(self, data, trees, iter, class_name, learning_rate, logger):
         f_prev_name = 'f_' + class_name + '_' + str(iter - 1)
